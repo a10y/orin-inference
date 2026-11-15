@@ -33,6 +33,7 @@ Then open `http://<orin-hostname>:8765` from any device on your tailnet.
   orin-inference.service systemd user unit (copied to ~/.config/systemd/user/)
   requirements.txt       Python dependencies (install torch from the Jetson index first)
   infer.env              optional overrides (INFER_PORT, INFER_MAX_UPLOAD_GB, INFER_RETENTION_DAYS, INFER_BATCH)
+  deploy/                continuous-deployment scripts (see deploy/README.md)
   server/                FastAPI app, worker, model backends, static frontend
   data/jobs.db           job database (SQLite)
   data/jobs/<id>/        upload and outputs for each job
@@ -52,6 +53,14 @@ The service runs under systemd with user lingering enabled, so it starts at boot
 anyone logged in and restarts after crashes. If the service restarts, jobs that were
 running go back into the queue and start over. Finished jobs are deleted after
 `INFER_RETENTION_DAYS` (default 14).
+
+## Continuous deployment
+
+Pushes to `main` can deploy automatically to the device over Tailscale. GitHub Actions
+joins the tailnet as an ephemeral, ACL-restricted node and runs a deploy script that can
+do nothing else. The script waits for the running job to finish, updates the code, and
+rolls back if the new version doesn't start. See [deploy/README.md](deploy/README.md)
+for the one-time setup.
 
 ## Security model
 

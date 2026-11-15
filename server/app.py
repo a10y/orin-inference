@@ -106,7 +106,8 @@ def list_models():
 
 @app.get("/api/status")
 def status():
-    return {"counts": db.counts(), "current_job": _worker.current, "loaded_models": models.loaded_ids(),
+    return {"version": config.VERSION, "paused": config.paused(),
+            "counts": db.counts(), "current_job": _worker.current, "loaded_models": models.loaded_ids(),
             "max_upload_bytes": config.MAX_UPLOAD_BYTES, "retention_days": config.RETENTION_DAYS}
 
 
