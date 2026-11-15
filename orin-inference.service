@@ -1,0 +1,23 @@
+[Unit]
+Description=Orin private object-detection inference server (Tailscale only)
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+WorkingDirectory=%h/orin-inference
+ExecStart=%h/orin-inference/run.sh
+Restart=always
+RestartSec=5
+Environment=PYTHONUNBUFFERED=1
+StandardOutput=append:%h/orin-inference/data/server.log
+StandardError=append:%h/orin-inference/data/server.log
+Environment=YOLO_OFFLINE=0
+# Optional overrides: INFER_PORT, INFER_MAX_UPLOAD_GB, INFER_RETENTION_DAYS, INFER_BATCH
+EnvironmentFile=-%h/orin-inference/infer.env
+NoNewPrivileges=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=default.target

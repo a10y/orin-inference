@@ -1,0 +1,7 @@
+# Install torch/torchvision first from the Jetson index (see README), then:
+numpy<2
+ultralytics
+opencv-python-headless
+imageio-ffmpeg
+fastapi>=0.110
+uvicorn[standard]

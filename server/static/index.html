@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orin Inference</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header>
+  <h1>Orin Inference</h1>
+  <span id="server-status" class="muted"></span>
+</header>
+
+<main>
+  <section class="card">
+    <h2>New job</h2>
+    <form id="job-form">
+      <label class="drop" id="drop">
+        <input type="file" id="file" accept="image/*,video/*,.mkv,.ts,.mpg,.mpeg,.wmv,.flv" multiple hidden>
+        <span id="drop-text">Drop images or videos here, or <u>browse</u></span>
+      </label>
+      <ul id="file-list"></ul>
+
+      <div class="grid">
+        <label>Model
+          <select id="model"></select>
+          <small id="model-notes" class="muted"></small>
+        </label>
+        <label>Output
+          <select id="output">
+            <option value="media">Annotated media (same type as input)</option>
+            <option value="json">Detections JSON (COCO format)</option>
+          </select>
+        </label>
+        <label>Confidence threshold <output id="conf-val">0.35</output>
+          <input type="range" id="conf" min="0.05" max="0.95" step="0.05" value="0.35">
+        </label>
+      </div>
+
+      <button type="submit" id="submit" disabled>Run inference</button>
+      <div id="upload-progress" hidden>
+        <div class="bar"><div></div></div>
+        <span class="muted"></span>
+      </div>
+      <p id="form-error" class="error" hidden></p>
+    </form>
+  </section>
+
+  <section class="card">
+    <div class="row">
+      <h2>Jobs</h2>
+      <span id="queue-summary" class="muted"></span>
+    </div>
+    <div id="jobs"><p class="muted">No jobs yet.</p></div>
+  </section>
+</main>
+
+<template id="job-tpl">
+  <article class="job">
+    <div class="job-head">
+      <div>
+        <strong class="job-file"></strong>
+        <div class="muted job-meta"></div>
+      </div>
+      <span class="badge"></span>
+    </div>
+    <div class="bar job-bar"><div></div></div>
+    <div class="muted job-progress"></div>
+    <div class="job-error error"></div>
+    <div class="job-classes"></div>
+    <div class="job-preview"></div>
+    <div class="job-actions"></div>
+  </article>
+</template>
+
+<script src="/app.js"></script>
+</body>
+</html>

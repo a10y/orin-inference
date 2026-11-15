@@ -1,0 +1,53 @@
+:root {
+  color-scheme: light dark;
+  --bg: #f5f6f8; --card: #fff; --fg: #1c1e21; --muted: #6b7280; --border: #e2e5ea;
+  --accent: #2563eb; --accent-fg: #fff; --ok: #16a34a; --warn: #d97706; --err: #dc2626;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #0f1115; --card: #181b21; --fg: #e6e8eb; --muted: #9aa1ac; --border: #2a2f37; --accent: #3b82f6; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; font: 14px/1.45 system-ui, -apple-system, Segoe UI, sans-serif; background: var(--bg); color: var(--fg); }
+header { display: flex; align-items: baseline; gap: 1rem; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); background: var(--card); }
+h1 { font-size: 1.2rem; margin: 0; }
+h2 { font-size: 1rem; margin: 0 0 .75rem; }
+main { max-width: 980px; margin: 1.5rem auto; padding: 0 1rem; display: grid; gap: 1.25rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; }
+.muted { color: var(--muted); }
+.error { color: var(--err); white-space: pre-wrap; }
+.row { display: flex; justify-content: space-between; align-items: baseline; }
+
+.drop { display: block; border: 2px dashed var(--border); border-radius: 8px; padding: 1.75rem; text-align: center; cursor: pointer; transition: .15s; }
+.drop:hover, .drop.over { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 6%, transparent); }
+#file-list { list-style: none; padding: 0; margin: .5rem 0 0; font-size: 13px; }
+#file-list li { display: flex; justify-content: space-between; padding: .2rem 0; border-bottom: 1px solid var(--border); }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin: 1rem 0; }
+label { display: grid; gap: .3rem; font-weight: 500; }
+select, input[type=range] { width: 100%; font: inherit; }
+select { padding: .45rem; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--fg); }
+small { font-weight: 400; }
+
+button { font: inherit; border: 0; border-radius: 6px; padding: .55rem 1.1rem; background: var(--accent); color: var(--accent-fg); cursor: pointer; }
+button:disabled { opacity: .5; cursor: default; }
+button.secondary, a.button { background: transparent; color: var(--fg); border: 1px solid var(--border); padding: .35rem .8rem; font-size: 13px; text-decoration: none; border-radius: 6px; display: inline-block; }
+button.secondary:hover, a.button:hover { border-color: var(--accent); }
+a.button.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+
+.bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin: .6rem 0 .3rem; }
+.bar > div { height: 100%; width: 0; background: var(--accent); transition: width .3s; }
+.bar.indeterminate > div { width: 30%; animation: slide 1.2s infinite ease-in-out; }
+@keyframes slide { from { transform: translateX(-100%); } to { transform: translateX(340%); } }
+
+.job { border-top: 1px solid var(--border); padding: 1rem 0; }
+.job:first-child { border-top: 0; padding-top: 0; }
+.job-head { display: flex; justify-content: space-between; gap: 1rem; }
+.job-file { word-break: break-all; }
+.badge { font-size: 12px; padding: .1rem .55rem; border-radius: 999px; border: 1px solid currentColor; height: fit-content; white-space: nowrap; }
+.badge.queued { color: var(--muted); } .badge.running, .badge.canceling { color: var(--accent); }
+.badge.done { color: var(--ok); } .badge.failed { color: var(--err); } .badge.canceled { color: var(--warn); }
+.job-classes { display: flex; flex-wrap: wrap; gap: .35rem; margin: .4rem 0; }
+.chip { display: inline-flex; align-items: center; gap: .35rem; font-size: 12px; padding: .1rem .5rem; border-radius: 4px; border: 1px solid var(--border); }
+.chip i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.job-preview img, .job-preview video { max-width: 100%; max-height: 420px; border-radius: 6px; margin-top: .4rem; background: #000; }
+.job-actions { display: flex; gap: .5rem; margin-top: .5rem; flex-wrap: wrap; }
