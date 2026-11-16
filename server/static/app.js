@@ -203,8 +203,8 @@ async function refresh() {
     for (const id of rendered.keys()) if (!ids.has(id)) rendered.delete(id);
     active = jobs.some((j) => ["queued", "running", "canceling"].includes(j.status));
     const c = st.counts;
-    $("#queue-summary").textContent = `${c.running || 0} running · ${c.queued || 0} queued`;
-    $("#server-status").textContent = `connected · GPU models loaded: ${st.loaded_models.join(", ") || "none"} · max upload ${fmtBytes(st.max_upload_bytes)} · results kept ${st.retention_days} days`;
+    $("#queue-summary").textContent = `${c.running || 0} running · ${c.queued || 0} queued${st.paused ? " · paused for deploy" : ""}`;
+    $("#server-status").textContent = `connected · version ${String(st.version).slice(0, 7)} · GPU models loaded: ${st.loaded_models.join(", ") || "none"} · max upload ${fmtBytes(st.max_upload_bytes)} · results kept ${st.retention_days} days`;
   } catch (e) {
     $("#server-status").textContent = `disconnected (${e.message})`;
   } finally {

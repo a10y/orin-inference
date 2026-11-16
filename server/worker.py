@@ -248,6 +248,10 @@ class Worker(threading.Thread):
 
     def run(self):
         while True:
+            if config.paused():
+                self.wake.wait(timeout=2)
+                self.wake.clear()
+                continue
             job = db.next_queued()
             if job is None:
                 self.wake.wait(timeout=5)
