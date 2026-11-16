@@ -4,7 +4,8 @@ Every push to `main` runs [`.github/workflows/deploy.yml`](../.github/workflows/
 
 1. **check:** byte-compiles the Python and runs `shellcheck`. This also runs on pull requests.
 2. **deploy:** runs only for pushes to `main` and manual runs. The GitHub runner joins
-   your tailnet as an *ephemeral* `tag:ci` node using Tailscale's official action. It
+   your tailnet as an *ephemeral* `tag:ci` node using Tailscale's official action,
+   authenticating with GitHub's OIDC token, so no Tailscale secret is stored in GitHub. It
    then connects over SSH to the device with a key that can run exactly one command:
    `deploy <commit sha>`.
 
@@ -77,27 +78,41 @@ everything. Remove that rule or narrow it so this one decides what CI can reach:
 `<device>` can be the device's Tailscale IP, a host alias defined in `hosts`, or a tag
 you apply to it, such as `tag:orin`.
 
-**Create an OAuth client:** go to *Settings → Trust credentials → OAuth clients*. Give
-it the **Auth Keys: write** scope and the tag `tag:ci`. CI nodes are ephemeral, so
-Tailscale removes them as soon as the job ends.
+**Create a federated identity credential** (workload identity federation) in
+*Settings → Trust credentials*:
+
+- **Issuer:** GitHub Actions.
+- **Subject:** `repo:<owner>/orin-inference:environment:production`. Only jobs that run
+  in this repo's `production` environment get a matching token, so other branches,
+  pull requests and forks can't join the tailnet.
+- **Scope:** **Auth Keys: write**, with the tag `tag:ci`.
+
+Copy the **client ID** and **audience** it shows. Neither is secret. CI nodes are
+ephemeral, so Tailscale removes them as soon as the job ends.
 
 ### 4. GitHub: environment and secrets
 
 1. *Settings → Environments → New environment* named **`production`**. Under
    *Deployment branches and tags*, choose *Selected branches* and add `main`.
    Secrets in this environment are never available to pull requests or other branches.
-2. Add these **environment secrets** to `production`:
+2. Add these **environment variables** to `production`. They aren't secret:
+
+| Variable | Value |
+| --- | --- |
+| `TS_CLIENT_ID` | Client ID of the federated identity from step 3 |
+| `TS_AUDIENCE` | Audience of the federated identity from step 3 |
+
+3. Add these **environment secrets** to `production`. The host and user are secrets so
+   they're masked in the public workflow log:
 
 | Secret | Value |
 | --- | --- |
-| `TS_OAUTH_CLIENT_ID` | OAuth client ID from step 3 |
-| `TS_OAUTH_SECRET` | OAuth client secret from step 3 |
 | `DEPLOY_HOST` | Device's Tailscale IP or MagicDNS name |
 | `DEPLOY_USER` | Device user that runs the service |
 | `DEPLOY_SSH_KEY` | Contents of the private key from step 2 |
 | `DEPLOY_KNOWN_HOSTS` | Output of `ssh-keyscan -t ed25519 <device-tailscale-name>`, run from a machine on the tailnet |
 
-3. Optional but recommended: protect `main` (*Settings → Branches*) so changes arrive
+4. Optional but recommended: protect `main` (*Settings → Branches*) so changes arrive
    through reviewed pull requests. Anyone who can push to `main` can deploy code to the device.
 
 ### 5. Test it
