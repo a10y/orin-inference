@@ -87,32 +87,28 @@ you apply to it, such as `tag:orin`.
   pull requests and forks can't join the tailnet.
 - **Scope:** **Auth Keys: write**, with the tag `tag:ci`.
 
-Copy the **client ID** and **audience** it shows. Neither is secret. CI nodes are
-ephemeral, so Tailscale removes them as soon as the job ends.
+Copy the **client ID** and **audience** it shows. CI nodes are ephemeral, so Tailscale
+removes them as soon as the job ends.
 
 ### 4. GitHub: environment and secrets
 
 1. *Settings → Environments → New environment* named **`production`**. Under
    *Deployment branches and tags*, choose *Selected branches* and add `main`.
    Secrets in this environment are never available to pull requests or other branches.
-2. Add these **environment variables** to `production`. They aren't secret:
-
-| Variable | Value |
-| --- | --- |
-| `TS_CLIENT_ID` | Client ID of the federated identity from step 3 |
-| `TS_AUDIENCE` | Audience of the federated identity from step 3 |
-
-3. Add these **environment secrets** to `production`. The host and user are secrets so
-   they're masked in the public workflow log:
+2. Add these **environment secrets** to `production`. The client ID and audience aren't
+   sensitive on their own, but secrets keep everything in one place and are masked in
+   the public workflow log:
 
 | Secret | Value |
 | --- | --- |
+| `TS_CLIENT_ID` | Client ID of the federated identity from step 3 |
+| `TS_AUDIENCE` | Audience of the federated identity from step 3 |
 | `DEPLOY_HOST` | Device's Tailscale IP or MagicDNS name |
 | `DEPLOY_USER` | Device user that runs the service |
 | `DEPLOY_SSH_KEY` | Contents of the private key from step 2 |
 | `DEPLOY_KNOWN_HOSTS` | Output of `ssh-keyscan -t ed25519 <device-tailscale-name>`, run from a machine on the tailnet |
 
-4. Optional but recommended: protect `main` (*Settings → Branches*) so changes arrive
+3. Optional but recommended: protect `main` (*Settings → Branches*) so changes arrive
    through reviewed pull requests. Anyone who can push to `main` can deploy code to the device.
 
 ### 5. Test it
